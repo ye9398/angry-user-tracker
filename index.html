@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>愤怒用户追踪器 - 创建新分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* 动态光晕背景 */
+        .gradient-bg {
+            background: linear-gradient(135deg, #7c2d12 0%, #dc2626 50%, #ef4444 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: glow 8s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+            50% { transform: translate(-10%, -10%) scale(1.1); opacity: 0.8; }
+        }
+        
+        /* 输入框聚焦效果 */
+        .input-focus:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        /* 按钮悬停效果 */
+        .btn-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(220 38 38 / 0.3);
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            .input-focus { font-size: 16px; } /* 防止 iPhone 自动缩放 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <div class="gradient-bg text-white py-12">
+        <div class="max-w-3xl mx-auto px-6 relative z-10 text-center">
+            <div class="flex items-center justify-center mb-4">
+                <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl flex items-center justify-center mr-3 shadow-lg">
+                    <span class="text-3xl">🔥</span>
+                </div>
+                <h1 class="text-2xl font-bold">GodzillaAI</h1>
+            </div>
+            <h2 class="text-4xl sm:text-5xl font-black mb-2 drop-shadow-lg">愤怒用户追踪器</h2>
+            <p class="text-lg opacity-90 font-medium">从愤怒中挖掘机会 🔥</p>
+        </div>
+    </div>
+
+    <!-- 查询表单 -->
+    <div class="max-w-3xl mx-auto px-6 py-12 -mt-8 relative z-20">
+        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <h3 class="text-2xl font-black text-gray-800 mb-6 flex items-center">
+                <span class="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+                创建新分析
+                <span class="ml-3 text-sm text-gray-500 font-normal">Create New Analysis</span>
+            </h3>
+            
+            <form id="analysisForm" class="space-y-6">
+                <!-- 品类关键词 -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                        🔍 品类关键词 (英文)
+                        <span class="text-gray-500 font-normal ml-2">Product Category Keyword</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="keyword"
+                        placeholder="例如：blender problems, coffee maker, air fryer"
+                        class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 transition-all duration-300"
+                        required
+                    >
+                    <p class="text-xs text-gray-500 mt-2">💡 提示：使用英文关键词可以获得更多数据</p>
+                </div>
+                
+                <!-- 时间范围 -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                        ⏰ 数据时间范围
+                        <span class="text-gray-500 font-normal ml-2">Time Range</span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="timeRange" value="3m" class="peer sr-only">
+                            <div class="peer-checked:bg-red-50 peer-checked:border-red-500 peer-checked:text-red-700 peer-checked:shadow-md text-center px-4 py-3 border-2 border-gray-200 rounded-xl transition-all duration-300 hover:border-gray-300">
+                                <div class="font-bold text-sm">近 3 个月</div>
+                                <div class="text-xs opacity-75">Last 3 Months</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="timeRange" value="6m" class="peer sr-only">
+                            <div class="peer-checked:bg-red-50 peer-checked:border-red-500 peer-checked:text-red-700 peer-checked:shadow-md text-center px-4 py-3 border-2 border-gray-200 rounded-xl transition-all duration-300 hover:border-gray-300">
+                                <div class="font-bold text-sm">近 6 个月</div>
+                                <div class="text-xs opacity-75">Last 6 Months</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="timeRange" value="1y" checked class="peer sr-only">
+                            <div class="peer-checked:bg-red-50 peer-checked:border-red-500 peer-checked:text-red-700 peer-checked:shadow-md text-center px-4 py-3 border-2 border-gray-200 rounded-xl transition-all duration-300 hover:border-gray-300">
+                                <div class="font-bold text-sm">近 1 年</div>
+                                <div class="text-xs opacity-75">Last 1 Year</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- 国家/地区 -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                        🌍 目标市场
+                        <span class="text-gray-500 font-normal ml-2">Target Market</span>
+                    </label>
+                    <select 
+                        id="country"
+                        class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-800 bg-white transition-all duration-300"
+                    >
+                        <option value="us" selected>🇺🇸 美国 (United States)</option>
+                        <option value="cn">🇨🇳 中国 (China)</option>
+                        <option value="eu">🇪🇺 欧洲 (European Union)</option>
+                        <option value="uk">🇬🇧 英国 (United Kingdom)</option>
+                        <option value="jp">🇯🇵 日本 (Japan)</option>
+                        <option value="kr">🇰🇷 韩国 (South Korea)</option>
+                        <option value="au">🇦🇺 澳大利亚 (Australia)</option>
+                        <option value="sea">🌴 东南亚 (Southeast Asia)</option>
+                        <option value="sg">🇸🇬 新加坡 (Singapore)</option>
+                        <option value="th">🇹🇭 泰国 (Thailand)</option>
+                        <option value="vn">🇻🇳 越南 (Vietnam)</option>
+                        <option value="id">🇮🇩 印度尼西亚 (Indonesia)</option>
+                        <option value="my">🇲🇾 马来西亚 (Malaysia)</option>
+                        <option value="ph">🇵🇭 菲律宾 (Philippines)</option>
+                        <option value="global">🌐 全球 (Global)</option>
+                    </select>
+                </div>
+                
+                <!-- 数据来源 -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                        📊 数据来源
+                        <span class="text-gray-500 font-normal ml-2">Data Sources</span>
+                    </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="sources" value="reddit" checked class="peer sr-only">
+                            <div class="peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-700 text-center px-3 py-2 border-2 border-gray-200 rounded-lg transition-all duration-300 hover:border-gray-300">
+                                <div class="text-lg mb-1">💬</div>
+                                <div class="text-xs font-medium">Reddit</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="sources" value="amazon" checked class="peer sr-only">
+                            <div class="peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-700 text-center px-3 py-2 border-2 border-gray-200 rounded-lg transition-all duration-300 hover:border-gray-300">
+                                <div class="text-lg mb-1">🛒</div>
+                                <div class="text-xs font-medium">Amazon</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="sources" value="youtube" checked class="peer sr-only">
+                            <div class="peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-700 text-center px-3 py-2 border-2 border-gray-200 rounded-lg transition-all duration-300 hover:border-gray-300">
+                                <div class="text-lg mb-1">📺</div>
+                                <div class="text-xs font-medium">YouTube</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="sources" value="twitter" class="peer sr-only">
+                            <div class="peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-700 text-center px-3 py-2 border-2 border-gray-200 rounded-lg transition-all duration-300 hover:border-gray-300">
+                                <div class="text-lg mb-1">🐦</div>
+                                <div class="text-xs font-medium">Twitter</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- 高级选项 -->
+                <div class="border-t border-gray-200 pt-6">
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors">
+                            <span>⚙️ 高级选项</span>
+                            <span class="transform group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <div class="mt-4 space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-2">最小评论数要求</label>
+                                <input type="number" value="100" min="50" max="1000" class="input-focus w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-2">语言偏好</label>
+                                <select class="input-focus w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white">
+                                    <option value="en" selected>英语 (English)</option>
+                                    <option value="zh">中文 (Chinese)</option>
+                                    <option value="ja">日语 (Japanese)</option>
+                                    <option value="all">全部语言 (All Languages)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+                
+                <!-- 提交按钮 -->
+                <button 
+                    type="submit"
+                    class="btn-hover w-full bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white font-black py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                    <div class="flex items-center justify-center">
+                        <span class="text-2xl mr-3">🚀</span>
+                        <div>
+                            <div class="text-lg">开始分析</div>
+                            <div class="text-xs opacity-80">Start Analysis (预计 2-5 分钟)</div>
+                        </div>
+                    </div>
+                </button>
+                
+                <!-- 说明 -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <span class="mr-2">💡</span>
+                        使用说明
+                    </h4>
+                    <ul class="text-sm text-gray-700 space-y-2">
+                        <li>✅ <strong>品类关键词：</strong>使用英文可获得更多数据（如 "blender problems"）</li>
+                        <li>✅ <strong>时间范围：</strong>建议选择近 1 年，数据更全面</li>
+                        <li>✅ <strong>目标市场：</strong>根据产品销售地区选择</li>
+                        <li>✅ <strong>数据来源：</strong>至少选择 2 个数据源以保证数据质量</li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-8 text-sm text-gray-500">
+            <p>愤怒用户追踪器 by GodzillaAI | 让独立创业者不再孤军奋战</p>
+            <p class="mt-2 text-xs text-gray-400">从愤怒中挖掘机会 🔥</p>
+        </div>
+    </div>
+
+    <!-- 提交处理脚本 -->
+    <script>
+        let pollInterval = null;
+        
+        document.getElementById('analysisForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 获取表单数据
+            const timeRangeEl = document.querySelector('input[name="timeRange"]:checked');
+            const timeRangeLabel = timeRangeEl ? timeRangeEl.parentElement.querySelector('div').firstElementChild.textContent.trim() : '近 1 年';
+            
+            const formData = {
+                keyword: document.getElementById('keyword').value.trim(),
+                timeRange: timeRangeEl ? timeRangeEl.value : '1y',
+                timeRangeLabel: timeRangeLabel,
+                country: document.getElementById('country').value,
+                countryLabel: document.getElementById('country').options[document.getElementById('country').selectedIndex].text,
+                sources: Array.from(document.querySelectorAll('input[name="sources"]:checked')).map(cb => cb.value),
+                minReviews: parseInt(document.querySelector('input[type="number"]').value) || 100,
+                language: (document.querySelector('details select') || {}).value || 'en'
+            };
+            
+            // 验证必要字段
+            if (!formData.keyword) {
+                alert('请输入品类关键词');
+                return;
+            }
+            
+            // 显示加载状态
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = `
+                <div class="flex items-center justify-center">
+                    <svg class="animate-spin h-6 w-6 mr-3" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                    </svg>
+                    <div>
+                        <div class="text-lg">正在提交...</div>
+                        <div class="text-xs opacity-80">正在连接服务器</div>
+                    </div>
+                </div>
+            `;
+            submitBtn.disabled = true;
+            
+            // Vercel 演示版本 - 跳转到示例报告
+            alert('🎉 演示模式！\n\n这是静态演示页面，后端 API 未连接。\n\n点击"确定"查看示例报告效果。');
+            window.location.href = '/sample-report.html';
+            return;
+            
+            // 下面是真实 API 提交代码（演示模式下不会执行）
+            /*
+            fetch('http://localhost:5000/api/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 开始轮询进度
+                    startPolling(data.query_id, originalText);
+                } else {
+                    throw new Error(data.error || '提交失败');
+                }
+            })
+            .catch(error => {
+                console.error('提交失败:', error);
+                alert('提交失败：' + error.message + '\n\n请确保 API 服务器已启动：python api_server.py');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+            */
+        });
+        
+        function startPolling(queryId, originalText) {
+            const submitBtn = document.querySelector('button[type="submit"]');
+            
+            // 立即查询一次
+            checkStatus(queryId, originalText);
+            
+            // 每 2 秒轮询一次
+            pollInterval = setInterval(() => {
+                checkStatus(queryId, originalText);
+            }, 2000);
+        }
+        
+        function checkStatus(queryId, originalText) {
+            fetch(`http://localhost:5000/api/status/${queryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateProgress(data, originalText);
+                    
+                    if (data.status === 'completed') {
+                        // 分析完成，跳转到报告
+                        clearInterval(pollInterval);
+                        setTimeout(() => {
+                            window.location.href = data.report_url || 'output/blender_problems_report_v2_test.html';
+                        }, 1000);
+                    } else if (data.status === 'failed') {
+                        // 分析失败
+                        clearInterval(pollInterval);
+                        const submitBtn = document.querySelector('button[type="submit"]');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        alert('分析失败：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('查询进度失败:', error);
+                });
+        }
+        
+        function updateProgress(data, originalText) {
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const progress = data.progress || 0;
+            const message = data.message || '正在处理...';
+            
+            // 计算阶段
+            let stageText = '';
+            if (progress < 30) {
+                stageText = '准备中...';
+            } else if (progress < 60) {
+                stageText = '抓取数据...';
+            } else if (progress < 90) {
+                stageText = '分析数据...';
+            } else {
+                stageText = '生成报告...';
+            }
+            
+            submitBtn.innerHTML = `
+                <div class="flex items-center justify-center">
+                    <svg class="animate-spin h-6 w-6 mr-3" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                    </svg>
+                    <div>
+                        <div class="text-lg">${stageText} ${progress}%</div>
+                        <div class="text-xs opacity-80">${message}</div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

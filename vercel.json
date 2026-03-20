@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "name": "angry-user-tracker",
+  "builds": [
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/sample-report",
+      "dest": "/sample-report.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
